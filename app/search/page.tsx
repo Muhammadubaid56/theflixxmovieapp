@@ -35,9 +35,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <>
       {/* Search Section */}
-      <section className="py-16 px-5 mb-10">
-        <div className="container mx-auto max-w-4xl">
-          <Suspense fallback={<div>Loading search form...</div>}>
+      <section className="py-20 px-5 mb-16 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/5 to-transparent"></div>
+        <div className="container mx-auto max-w-4xl relative z-10">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-black mb-3 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
+              Search {type === 'movie' ? 'Movies' : 'TV Shows'}
+            </h2>
+            <p className="text-gray-400 text-lg">Find your favorite content</p>
+          </div>
+          <Suspense fallback={<div className="text-center text-gray-400">Loading search form...</div>}>
             <SearchForm initialQuery={query} initialType={type} />
           </Suspense>
         </div>
@@ -46,25 +53,35 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {/* Search Results */}
       {error && (
         <section className="container mx-auto px-5 mb-10">
-          <div className="bg-red-600 text-white p-5 rounded mb-5">
-            {error}
+          <div className="bg-gradient-to-r from-red-600/90 to-red-700/90 backdrop-blur-sm text-white p-6 rounded-2xl border border-red-500/50 shadow-xl">
+            <div className="flex items-center gap-3">
+              <i className="fas fa-exclamation-circle text-2xl"></i>
+              <p className="font-semibold">{error}</p>
+            </div>
           </div>
         </section>
       )}
 
       {query && results && (
-        <section className="container mx-auto px-5 mb-10">
-          <h2 className="text-2xl font-bold mb-6">
-            Search Results for &quot;{query}&quot; ({results.total_results} {type === 'movie' ? 'movies' : 'TV shows'} found)
-          </h2>
+        <section className="container mx-auto px-5 mb-16">
+          <div className="mb-8">
+            <h2 className="text-3xl font-black mb-2 bg-gradient-to-r from-secondary via-yellow-400 to-secondary bg-clip-text text-transparent">
+              Search Results
+            </h2>
+            <p className="text-gray-400 text-lg">
+              Found <span className="text-secondary font-bold">{results.total_results}</span> {type === 'movie' ? 'movies' : 'TV shows'} for &quot;<span className="text-white font-semibold">{query}</span>&quot;
+            </p>
+          </div>
           
           {results.results.length === 0 ? (
-            <div className="text-center py-10">
-              <p className="text-xl text-gray-400">No results found. Try a different search term.</p>
+            <div className="text-center py-20 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-sm rounded-2xl border border-white/10">
+              <i className="fas fa-search text-6xl text-gray-600 mb-4"></i>
+              <p className="text-2xl text-gray-400 font-semibold mb-2">No results found</p>
+              <p className="text-gray-500">Try a different search term</p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 mb-8">
                 {results.results.map((item) => (
                   <MovieCard
                     key={item.id}
@@ -88,9 +105,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       )}
 
       {!query && (
-        <section className="container mx-auto px-5 mb-10">
-          <div className="text-center py-10">
-            <p className="text-xl text-gray-400">Enter a search term to find movies or TV shows.</p>
+        <section className="container mx-auto px-5 mb-16">
+          <div className="text-center py-20 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-sm rounded-2xl border border-white/10">
+            <i className="fas fa-film text-6xl text-gray-600 mb-4"></i>
+            <p className="text-2xl text-gray-400 font-semibold mb-2">Start Your Search</p>
+            <p className="text-gray-500">Enter a search term above to find movies or TV shows</p>
           </div>
         </section>
       )}
