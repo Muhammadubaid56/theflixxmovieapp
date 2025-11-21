@@ -1,7 +1,16 @@
 import { fetchAPIData, TVShow } from '@/lib/tmdb'
 import MovieCard from '@/components/MovieCard'
+import { generateMetadata } from '@/lib/metadata'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = generateMetadata({
+  title: 'Popular TV Shows - Trending Series & Shows',
+  description: 'Browse popular and trending TV shows. Discover the best TV series, watch trailers, and explore thousands of shows across all genres.',
+  keywords: ['popular TV shows', 'trending series', 'TV series', 'streaming shows', 'best TV shows', 'watch TV online', 'television series'],
+  url: '/shows',
+})
 
 export default async function ShowsPage() {
   const popularShows = await fetchAPIData<{ results: TVShow[] }>('tv/popular')

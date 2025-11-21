@@ -1,8 +1,17 @@
 import { fetchAPIData, Movie } from '@/lib/tmdb'
 import MovieCard from '@/components/MovieCard'
 import NowPlayingSlider from '@/components/NowPlayingSlider'
+import { generateMetadata } from '@/lib/metadata'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = generateMetadata({
+  title: 'Flixx - Discover Movies & TV Shows | Popular Films & Series',
+  description: 'Browse popular movies and TV shows. Discover now playing films, trending series, and search through thousands of entertainment titles. Your one-stop destination for movies and TV shows.',
+  keywords: ['popular movies', 'trending TV shows', 'now playing movies', 'movie streaming', 'TV series', 'entertainment', 'watch movies online', 'browse films'],
+  url: '/',
+})
 
 export default async function Home() {
   const nowPlaying = await fetchAPIData<{ results: Movie[] }>('movie/now_playing')

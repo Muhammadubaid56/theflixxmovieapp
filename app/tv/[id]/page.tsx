@@ -2,10 +2,33 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { fetchAPIData, TVShow, getImageUrl } from '@/lib/tmdb'
 import { notFound } from 'next/navigation'
+import { generateMetadata as genMeta, generateStructuredData } from '@/lib/metadata'
+import type { Metadata } from 'next'
 
 interface TVShowDetailsPageProps {
   params: {
     id: string
+  }
+}
+
+export async function generateMetadata({ params }: TVShowDetailsPageProps): Promise<Metadata> {
+  try {
+    const show = await fetchAPIData<TVShow>(`tv/${params.id}`)
+    const genres = show.genres?.map(g => g.name) || []
+    
+    return genMeta({
+      title: `${show.name} (${show.first_air_date?.split('-')[0] || ''}) - TV Show Details & Info`,
+      description: show.overview || `Watch ${show.name} - ${genres.join(', ')} TV series. Rating: ${show.vote_average}/10. First aired: ${show.first_air_date}`,
+      keywords: [show.name, ...genres, 'TV show', 'TV series', 'television', 'watch', 'streaming', 'entertainment'],
+      image: getImageUrl(show.backdrop_path || show.poster_path, 'w1280'),
+      url: `/tv/${params.id}`,
+      type: 'tv_show',
+    })
+  } catch {
+    return genMeta({
+      title: 'TV Show Not Found',
+      description: 'The requested TV show could not be found.',
+    })
   }
 }
 
@@ -25,8 +48,24 @@ export default async function TVShowDetailsPage({ params }: TVShowDetailsPagePro
     })
   }
 
+  const structuredData = generateStructuredData({
+    type: 'TVSeries',
+    title: show.name,
+    description: show.overview,
+    image: getImageUrl(show.backdrop_path || show.poster_path, 'w1280'),
+    url: `/tv/${show.id}`,
+    datePublished: show.first_air_date,
+    rating: show.vote_average,
+    genre: show.genres?.map(g => g.name) || [],
+  })
+
   return (
-    <section className="container mx-auto px-5 mb-16 mt-12">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <section className="container mx-auto px-5 mb-16 mt-12">
       <div className="mb-8">
         <Link href="/shows" className="inline-flex items-center gap-2 text-gray-300 hover:text-secondary transition-colors group">
           <i className="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
@@ -150,6 +189,7 @@ export default async function TVShowDetailsPage({ params }: TVShowDetailsPagePro
         )}
       </div>
     </section>
+    </>
   )
 }
 

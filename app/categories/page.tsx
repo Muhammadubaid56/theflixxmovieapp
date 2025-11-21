@@ -1,7 +1,16 @@
 import Link from 'next/link'
 import { getMovieGenres, getTVGenres } from '@/lib/tmdb'
+import { generateMetadata } from '@/lib/metadata'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = generateMetadata({
+  title: 'Browse Movies & TV Shows by Category - All Genres',
+  description: 'Browse movies and TV shows by genre. Explore Action, Comedy, Sci-Fi, Horror, Drama, and more. Find your favorite entertainment by category.',
+  keywords: ['movie genres', 'TV show genres', 'browse by category', 'action movies', 'comedy movies', 'sci-fi movies', 'horror movies', 'drama movies', 'movie categories'],
+  url: '/categories',
+})
 
 export default async function CategoriesPage() {
   const movieGenres = await getMovieGenres()

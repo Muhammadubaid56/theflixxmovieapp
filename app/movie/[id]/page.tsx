@@ -2,10 +2,33 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { fetchAPIData, Movie, getImageUrl } from '@/lib/tmdb'
 import { notFound } from 'next/navigation'
+import { generateMetadata as genMeta, generateStructuredData } from '@/lib/metadata'
+import type { Metadata } from 'next'
 
 interface MovieDetailsPageProps {
   params: {
     id: string
+  }
+}
+
+export async function generateMetadata({ params }: MovieDetailsPageProps): Promise<Metadata> {
+  try {
+    const movie = await fetchAPIData<Movie>(`movie/${params.id}`)
+    const genres = movie.genres?.map(g => g.name) || []
+    
+    return genMeta({
+      title: `${movie.title} (${movie.release_date?.split('-')[0] || ''}) - Movie Details & Info`,
+      description: movie.overview || `Watch ${movie.title} - ${genres.join(', ')} movie. Rating: ${movie.vote_average}/10. Release date: ${movie.release_date}`,
+      keywords: [movie.title, ...genres, 'movie', 'film', 'cinema', 'watch', 'streaming', 'entertainment'],
+      image: getImageUrl(movie.backdrop_path || movie.poster_path, 'w1280'),
+      url: `/movie/${params.id}`,
+      type: 'movie',
+    })
+  } catch {
+    return genMeta({
+      title: 'Movie Not Found',
+      description: 'The requested movie could not be found.',
+    })
   }
 }
 
@@ -38,8 +61,24 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
     return `${hours}h ${mins}m`
   }
 
+  const structuredData = generateStructuredData({
+    type: 'Movie',
+    title: movie.title,
+    description: movie.overview,
+    image: getImageUrl(movie.backdrop_path || movie.poster_path, 'w1280'),
+    url: `/movie/${movie.id}`,
+    datePublished: movie.release_date,
+    rating: movie.vote_average,
+    genre: movie.genres?.map(g => g.name) || [],
+  })
+
   return (
-    <section className="container mx-auto px-5 mb-16 mt-12">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <section className="container mx-auto px-5 mb-16 mt-12">
       <div className="mb-8">
         <Link href="/" className="inline-flex items-center gap-2 text-gray-300 hover:text-secondary transition-colors group">
           <i className="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
@@ -158,6 +197,7 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
         )}
       </div>
     </section>
+    </>
   )
 }
 

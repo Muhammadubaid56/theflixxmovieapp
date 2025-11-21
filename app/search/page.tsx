@@ -3,8 +3,31 @@ import { fetchAPIData, Movie, TVShow, APIResponse } from '@/lib/tmdb'
 import MovieCard from '@/components/MovieCard'
 import SearchForm from '@/components/SearchForm'
 import SearchPagination from '@/components/SearchPagination'
+import { generateMetadata } from '@/lib/metadata'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
+  const query = searchParams.query || ''
+  const type = searchParams.type || 'movie'
+  
+  if (query) {
+    return generateMetadata({
+      title: `Search Results for "${query}" - ${type === 'movie' ? 'Movies' : 'TV Shows'}`,
+      description: `Search results for "${query}" in ${type === 'movie' ? 'movies' : 'TV shows'}. Find and discover your favorite entertainment content.`,
+      keywords: [query, type === 'movie' ? 'movies' : 'TV shows', 'search', 'find movies', 'find TV shows'],
+      url: `/search?query=${encodeURIComponent(query)}&type=${type}`,
+    })
+  }
+  
+  return generateMetadata({
+    title: 'Search Movies & TV Shows',
+    description: 'Search through thousands of movies and TV shows. Find your favorite films and series by title, genre, or keyword.',
+    keywords: ['search movies', 'search TV shows', 'find films', 'movie search', 'TV show search'],
+    url: '/search',
+  })
+}
 
 interface SearchPageProps {
   searchParams: {

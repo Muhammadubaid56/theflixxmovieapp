@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { discoverTVByGenre, getTVGenres, APIResponse, TVShow } from '@/lib/tmdb'
 import MovieCard from '@/components/MovieCard'
 import GenrePagination from '@/components/GenrePagination'
+import { generateMetadata } from '@/lib/metadata'
+import type { Metadata } from 'next'
 
 interface GenreTVPageProps {
   params: {
@@ -15,6 +17,17 @@ interface GenreTVPageProps {
 }
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata({ params, searchParams }: GenreTVPageProps): Promise<Metadata> {
+  const genreName = searchParams.name || 'TV Shows'
+  
+  return generateMetadata({
+    title: `${genreName} TV Shows - Browse ${genreName} Series`,
+    description: `Browse and discover ${genreName.toLowerCase()} TV shows. Find the best ${genreName.toLowerCase()} series, watch episodes, and explore popular ${genreName.toLowerCase()} television.`,
+    keywords: [`${genreName} TV shows`, `${genreName} series`, 'TV shows', 'TV series', 'television', genreName.toLowerCase()],
+    url: `/categories/tv/${params.id}?name=${encodeURIComponent(genreName)}`,
+  })
+}
 
 export default async function GenreTVPage({ params, searchParams }: GenreTVPageProps) {
   const genreId = parseInt(params.id)
