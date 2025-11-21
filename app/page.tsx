@@ -2,6 +2,8 @@ import { fetchAPIData, Movie } from '@/lib/tmdb'
 import MovieCard from '@/components/MovieCard'
 import NowPlayingSlider from '@/components/NowPlayingSlider'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   const nowPlaying = await fetchAPIData<{ results: Movie[] }>('movie/now_playing')
   const popularMovies = await fetchAPIData<{ results: Movie[] }>('movie/popular')

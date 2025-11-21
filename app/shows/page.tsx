@@ -1,6 +1,8 @@
 import { fetchAPIData, TVShow } from '@/lib/tmdb'
 import MovieCard from '@/components/MovieCard'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ShowsPage() {
   const popularShows = await fetchAPIData<{ results: TVShow[] }>('tv/popular')
 

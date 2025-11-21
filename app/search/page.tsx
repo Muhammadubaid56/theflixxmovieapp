@@ -4,6 +4,8 @@ import MovieCard from '@/components/MovieCard'
 import SearchForm from '@/components/SearchForm'
 import SearchPagination from '@/components/SearchPagination'
 
+export const dynamic = 'force-dynamic'
+
 interface SearchPageProps {
   searchParams: {
     query?: string

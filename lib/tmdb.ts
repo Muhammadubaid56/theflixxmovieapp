@@ -57,6 +57,10 @@ export interface APIResponse<T> {
 }
 
 export async function fetchAPIData<T>(endpoint: string): Promise<T> {
+  if (!API_KEY) {
+    throw new Error('TMDB API key is not configured. Please set NEXT_PUBLIC_TMDB_API_KEY in your .env.local file');
+  }
+
   // Check if endpoint already has query parameters
   const separator = endpoint.includes('?') ? '&' : '?'
   const url = `${API_URL}${endpoint}${separator}api_key=${API_KEY}&language=en-US`
