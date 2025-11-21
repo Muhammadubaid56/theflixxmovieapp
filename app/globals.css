@@ -2,28 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 @import 'swiper/css';
 @import 'swiper/css/navigation';
 @import 'swiper/css/pagination';
 
 @layer base {
   body {
-    @apply bg-primary text-white font-sans;
+    @apply bg-gradient-to-br from-primary via-[#0a1628] to-primary text-white font-sans antialiased;
+    background-attachment: fixed;
+  }
+  
+  * {
+    @apply scroll-smooth;
   }
 }
 
 @layer components {
   .btn {
-    @apply inline-block px-4 py-2 border border-secondary rounded text-white cursor-pointer bg-transparent transition-all duration-300 hover:bg-secondary hover:text-black;
+    @apply inline-block px-6 py-3 border-2 border-secondary rounded-xl text-white font-semibold cursor-pointer bg-transparent transition-all duration-300 hover:bg-gradient-to-r hover:from-secondary hover:to-yellow-400 hover:text-black hover:scale-105 hover:shadow-lg hover:shadow-secondary/50;
   }
   
   .btn:disabled {
-    @apply border-gray-400 cursor-not-allowed;
+    @apply border-gray-400 cursor-not-allowed opacity-50;
   }
   
   .btn:disabled:hover {
-    @apply bg-transparent text-white;
+    @apply bg-transparent text-white scale-100 shadow-none;
   }
+  
+  .container {
+    @apply max-w-7xl;
+  }
+}
+
+/* Swiper Custom Styles */
+.swiper-button-next,
+.swiper-button-prev {
+  @apply !text-secondary !bg-black/50 !backdrop-blur-sm !rounded-full !w-12 !h-12 !border-2 !border-secondary/30;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  @apply !text-lg !font-bold;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  @apply !bg-secondary/20 !border-secondary;
+}
+
+.swiper-pagination-bullet {
+  @apply !bg-secondary/50 !opacity-100;
+}
+
+.swiper-pagination-bullet-active {
+  @apply !bg-secondary !scale-125;
 }
 
