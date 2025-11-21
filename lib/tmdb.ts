@@ -57,12 +57,13 @@ export interface APIResponse<T> {
 }
 
 export async function fetchAPIData<T>(endpoint: string): Promise<T> {
-  const response = await fetch(
-    `${API_URL}${endpoint}?api_key=${API_KEY}&language=en-US`,
-    {
-      next: { revalidate: 3600 }, // Revalidate every hour
-    }
-  );
+  // Check if endpoint already has query parameters
+  const separator = endpoint.includes('?') ? '&' : '?'
+  const url = `${API_URL}${endpoint}${separator}api_key=${API_KEY}&language=en-US`
+  
+  const response = await fetch(url, {
+    next: { revalidate: 3600 }, // Revalidate every hour
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch data: ${response.statusText}`);
