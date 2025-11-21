@@ -32,13 +32,13 @@ export default function Header() {
             <Link
               href="/"
               className={`relative px-6 py-3 text-lg font-semibold transition-all duration-300 rounded-lg ${
-                isActive('/') && pathname !== '/shows' && pathname !== '/search'
+                isActive('/') && pathname !== '/shows' && pathname !== '/search' && pathname !== '/categories'
                   ? 'text-secondary'
                   : 'text-gray-300 hover:text-white'
               }`}
             >
               <span className="relative z-10">Movies</span>
-              {isActive('/') && pathname !== '/shows' && pathname !== '/search' && (
+              {isActive('/') && pathname !== '/shows' && pathname !== '/search' && pathname !== '/categories' && (
                 <span className="absolute inset-0 bg-secondary/20 rounded-lg blur-sm"></span>
               )}
             </Link>
@@ -52,6 +52,19 @@ export default function Header() {
             >
               <span className="relative z-10">TV Shows</span>
               {isActive('/shows') && (
+                <span className="absolute inset-0 bg-secondary/20 rounded-lg blur-sm"></span>
+              )}
+            </Link>
+            <Link
+              href="/categories"
+              className={`relative px-6 py-3 text-lg font-semibold transition-all duration-300 rounded-lg ${
+                isActive('/categories')
+                  ? 'text-secondary'
+                  : 'text-gray-300 hover:text-white'
+              }`}
+            >
+              <span className="relative z-10">Categories</span>
+              {isActive('/categories') && (
                 <span className="absolute inset-0 bg-secondary/20 rounded-lg blur-sm"></span>
               )}
             </Link>

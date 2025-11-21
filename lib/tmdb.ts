@@ -56,6 +56,10 @@ export interface APIResponse<T> {
   total_results: number;
 }
 
+export interface GenreListResponse {
+  genres: Genre[];
+}
+
 export async function fetchAPIData<T>(endpoint: string): Promise<T> {
   if (!API_KEY) {
     throw new Error('TMDB API key is not configured. Please set NEXT_PUBLIC_TMDB_API_KEY in your .env.local file');
@@ -81,5 +85,27 @@ export function getImageUrl(path: string | null, size: string = 'w500'): string 
     return '/images/no-image.jpg';
   }
   return `https://image.tmdb.org/t/p/${size}${path}`;
+}
+
+// Get list of genres for movies
+export async function getMovieGenres(): Promise<Genre[]> {
+  const response = await fetchAPIData<GenreListResponse>('genre/movie/list');
+  return response.genres;
+}
+
+// Get list of genres for TV shows
+export async function getTVGenres(): Promise<Genre[]> {
+  const response = await fetchAPIData<GenreListResponse>('genre/tv/list');
+  return response.genres;
+}
+
+// Discover movies by genre
+export async function discoverMoviesByGenre(genreId: number, page: number = 1): Promise<APIResponse<Movie>> {
+  return fetchAPIData<APIResponse<Movie>>(`discover/movie?with_genres=${genreId}&page=${page}&sort_by=popularity.desc`);
+}
+
+// Discover TV shows by genre
+export async function discoverTVByGenre(genreId: number, page: number = 1): Promise<APIResponse<TVShow>> {
+  return fetchAPIData<APIResponse<TVShow>>(`discover/tv?with_genres=${genreId}&page=${page}&sort_by=popularity.desc`);
 }
 
