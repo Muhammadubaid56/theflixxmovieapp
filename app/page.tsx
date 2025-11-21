@@ -10,9 +10,6 @@ export default async function Home() {
 
   return (
     <>
-      {/* Now Playing Section */}
-      <NowPlayingSlider movies={nowPlaying.results.slice(0, 10)} />
-
       {/* Search Section */}
       <section className="py-20 px-5 mb-16 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/5 to-transparent"></div>
@@ -64,6 +61,9 @@ export default async function Home() {
           </form>
         </div>
       </section>
+
+      {/* Now Playing Section */}
+      <NowPlayingSlider movies={nowPlaying.results.slice(0, 10)} />
 
       {/* Popular Movies */}
       <section className="container mx-auto px-5 mb-16">
