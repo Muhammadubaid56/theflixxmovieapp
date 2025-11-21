@@ -15,19 +15,66 @@ export async function generateMetadata({ params }: TVShowDetailsPageProps): Prom
   try {
     const show = await fetchAPIData<TVShow>(`tv/${params.id}`)
     const genres = show.genres?.map(g => g.name) || []
+    const year = show.first_air_date?.split('-')[0] || ''
+    const seasons = show.number_of_seasons || 0
+    const episodes = show.number_of_episodes || 0
+    
+    // Create SEO-optimized title like IMDB
+    const seoTitle = `${show.name} (${year}) | Watch Online | Rating ${show.vote_average.toFixed(1)}/10 | Flixx`
+    
+    // Create rich, detailed description with keywords naturally integrated
+    let seoDescription = show.overview || ''
+    if (seoDescription) {
+      seoDescription += ` Watch ${show.name} (${year}) online. `
+    } else {
+      seoDescription = `Watch ${show.name} (${year}) - `
+    }
+    
+    seoDescription += `${genres.length > 0 ? genres.join(', ') : 'TV'} series`
+    if (seasons > 0) seoDescription += ` with ${seasons} season${seasons > 1 ? 's' : ''}`
+    if (episodes > 0) seoDescription += ` and ${episodes} episode${episodes > 1 ? 's' : ''}`
+    seoDescription += `. Rated ${show.vote_average.toFixed(1)}/10`
+    if (show.first_air_date) {
+      const airDate = new Date(show.first_air_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      seoDescription += `. First aired ${airDate}`
+    }
+    if (show.status) {
+      seoDescription += `. Status: ${show.status}`
+    }
+    seoDescription += `. ${show.name} is available to watch online. Browse episodes, cast, reviews, and more TV show details.`
+    
+    // Enhanced keywords array
+    const keywords = [
+      show.name,
+      `${show.name} ${year}`,
+      `${show.name} TV show`,
+      `${show.name} series`,
+      `watch ${show.name}`,
+      `${show.name} online`,
+      ...genres,
+      ...genres.map(g => `${g} TV shows`),
+      ...genres.map(g => `${g} series`),
+      'watch TV shows online',
+      'stream TV series',
+      'TV show database',
+      'series reviews',
+      'TV show ratings',
+      year ? `TV shows ${year}` : '',
+      seasons > 0 ? `${seasons} season series` : '',
+    ].filter(Boolean)
     
     return genMeta({
-      title: `${show.name} (${show.first_air_date?.split('-')[0] || ''}) - TV Show Details & Info`,
-      description: show.overview || `Watch ${show.name} - ${genres.join(', ')} TV series. Rating: ${show.vote_average}/10. First aired: ${show.first_air_date}`,
-      keywords: [show.name, ...genres, 'TV show', 'TV series', 'television', 'watch', 'streaming', 'entertainment'],
+      title: seoTitle,
+      description: seoDescription,
+      keywords: keywords,
       image: getImageUrl(show.backdrop_path || show.poster_path, 'w1280'),
       url: `/tv/${params.id}`,
       type: 'tv_show',
     })
   } catch {
     return genMeta({
-      title: 'TV Show Not Found',
-      description: 'The requested TV show could not be found.',
+      title: 'TV Show Not Found | Flixx',
+      description: 'The requested TV show could not be found. Browse our collection of popular movies and TV shows.',
     })
   }
 }

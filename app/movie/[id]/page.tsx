@@ -15,19 +15,60 @@ export async function generateMetadata({ params }: MovieDetailsPageProps): Promi
   try {
     const movie = await fetchAPIData<Movie>(`movie/${params.id}`)
     const genres = movie.genres?.map(g => g.name) || []
+    const year = movie.release_date?.split('-')[0] || ''
+    const runtime = movie.runtime ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : ''
+    
+    // Create SEO-optimized title like IMDB
+    const seoTitle = `${movie.title} (${year}) | Watch Online | Rating ${movie.vote_average.toFixed(1)}/10 | Flixx`
+    
+    // Create rich, detailed description with keywords naturally integrated
+    let seoDescription = movie.overview || ''
+    if (seoDescription) {
+      seoDescription += ` Watch ${movie.title} (${year}) online. `
+    } else {
+      seoDescription = `Watch ${movie.title} (${year}) - `
+    }
+    
+    seoDescription += `${genres.length > 0 ? genres.join(', ') : 'Movie'} film`
+    if (runtime) seoDescription += ` with ${runtime} runtime`
+    seoDescription += `. Rated ${movie.vote_average.toFixed(1)}/10`
+    if (movie.release_date) {
+      const releaseDate = new Date(movie.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      seoDescription += `. Released ${releaseDate}`
+    }
+    seoDescription += `. ${movie.title} is available to watch online. Browse cast, reviews, and more movie details.`
+    
+    // Enhanced keywords array
+    const keywords = [
+      movie.title,
+      `${movie.title} ${year}`,
+      `${movie.title} movie`,
+      `${movie.title} film`,
+      `watch ${movie.title}`,
+      `${movie.title} online`,
+      ...genres,
+      ...genres.map(g => `${g} movies`),
+      'watch movies online',
+      'stream movies',
+      'movie database',
+      'film reviews',
+      'movie ratings',
+      year ? `movies ${year}` : '',
+      runtime ? `${runtime} movies` : '',
+    ].filter(Boolean)
     
     return genMeta({
-      title: `${movie.title} (${movie.release_date?.split('-')[0] || ''}) - Movie Details & Info`,
-      description: movie.overview || `Watch ${movie.title} - ${genres.join(', ')} movie. Rating: ${movie.vote_average}/10. Release date: ${movie.release_date}`,
-      keywords: [movie.title, ...genres, 'movie', 'film', 'cinema', 'watch', 'streaming', 'entertainment'],
+      title: seoTitle,
+      description: seoDescription,
+      keywords: keywords,
       image: getImageUrl(movie.backdrop_path || movie.poster_path, 'w1280'),
       url: `/movie/${params.id}`,
       type: 'movie',
     })
   } catch {
     return genMeta({
-      title: 'Movie Not Found',
-      description: 'The requested movie could not be found.',
+      title: 'Movie Not Found | Flixx',
+      description: 'The requested movie could not be found. Browse our collection of popular movies and TV shows.',
     })
   }
 }
